@@ -78,7 +78,7 @@ result_gen <- function(distribution, shape = NULL, scale = NULL) {
   fourth_moment <- mean(data^4)      # E(X^4)
   
 
- percentiles <-  quantile(data, probs = seq(0.01, 1, by = 0.01)) 
+ percentiles <-  quantile(data, probs = seq(0.01, 1, by = 0.01))   ## Should use probs = seq(0.01, 0.99, by = 0.01)? 
 
   
   list(

@@ -15,6 +15,7 @@
 # For illustration purpose
 
 # Load necessary library
+library(GenOrd)
 library(ggplot2)
 
 # Define the Weibull density function
@@ -60,9 +61,9 @@ ggplot(data, aes(x = y, y = Density, color = Type)) +
 
 result_gen <- function(distribution, shape = NULL, scale = NULL) {
   n <- 100000
-  
+
   if (distribution == "normal") {
-    data <- rnorm(n, mean = 0, sd = 1) 
+    data <- rnorm(n, mean = 0, sd = 1)
   } else if (distribution == "weibull") {
     if (is.null(shape) | is.null(scale)) {
       stop("For Weibull distribution, both 'shape' and 'scale' must be specified.")
@@ -71,16 +72,16 @@ result_gen <- function(distribution, shape = NULL, scale = NULL) {
   } else {
     stop("Choose 'normal' or 'weibull'.")
   }
-  
+
   first_moment <- mean(data)         # E(X)
   second_moment <- mean(data^2)      # E(X^2)
   third_moment <- mean(data^3)       # E(X^3)
   fourth_moment <- mean(data^4)      # E(X^4)
-  
 
- percentiles <-  quantile(data, probs = seq(0.01, 1, by = 0.01)) 
 
-  
+ percentiles <-  quantile(data, probs = seq(0.01, 1, by = 0.01))
+
+
   list(
     first_moment = first_moment,
     second_moment = second_moment,
@@ -130,18 +131,18 @@ Pair_Bounds <- function(lst,lst2){
       up_bdd[i, j] = stats::cor(x[order(x)], y[order(y)])
     }
   }
-  
+
   for (i in 1:dim){
     x = lst[[i]]$data
     y = lst2[[i]]$data
     low_bdd[i, i] = stats::cor(x[order(x)], rev(y[order(y)]))
     up_bdd[i, i] = stats::cor(x[order(x)], y[order(y)])
   }
-  
+
   low_bdd[lower.tri(low_bdd)] <- t(low_bdd)[lower.tri(low_bdd)]
   up_bdd[lower.tri(up_bdd)] <- t(up_bdd)[lower.tri(up_bdd)]
-  
-  
+
+
   list(low_bdd = low_bdd, up_bdd = up_bdd)
 }
 
@@ -158,7 +159,7 @@ for (i in 1:5) {
     # Extract bounds
     lower <- DH_Bounds$low_bdd[i, j]
     upper <- DH_Bounds$up_bdd[i, j]
-   specified_corr[[paste0("Pair_", i, "_", j)]] <- seq(lower+0.01, 
+   specified_corr[[paste0("Pair_", i, "_", j)]] <- seq(lower+0.01,
                                                        upper-0.01, by = 0.01)
 
   }
@@ -166,29 +167,29 @@ for (i in 1:5) {
 
 # Q5
 
-library(GenOrd)
+
 
 probs <- seq(1/100, 99/100, by = 1/100)
-marginal <- list(probs, probs)  # Two variables 
-corrcheck(marginal) 
+marginal <- list(probs, probs)  # Two variables
+corrcheck(marginal)
 
 # # This is only one example, try to generalize it
-# 
+#
 # # Example correlation values
 # delta_spec <- specified_corr$Pair_1_1[1] # Replace with your value
 # delta_max <- DH_Bounds$up_bdd[1]   # Replace with your computed max bound
 # delta_min <- DH_Bounds$low_bdd[1]  # Replace with your computed min bound
-# 
+#
 # # Adjust correlation
 # if (delta_spec > 0) {
 #   input_corr <- delta_spec / delta_max
 # } else {
 #   input_corr <- -delta_spec / delta_min
 # }
-# 
+#
 # # Create correlation matrix
 # Sigma <- matrix(c(1, input_corr, input_corr, 1), nrow = 2)
-# 
+#
 # n <- 100
 # data <- ordsample(n, marginal, Sigma)
 
@@ -197,7 +198,7 @@ all_data <- list()
 for (i in 1:5){
   for (j in i:5){
     delta_spec <- specified_corr[[paste0("Pair_", i, "_", j)]][10] # Modify this 10 for Q8
-    delta_max <- DH_Bounds$up_bdd[i,j]   
+    delta_max <- DH_Bounds$up_bdd[i,j]
     delta_min <- DH_Bounds$low_bdd[i,j]
     if (delta_spec > 0) {
       input_corr <- delta_spec / delta_max
@@ -219,10 +220,10 @@ for (i in 1:5){
 #     percentiles[ordinal_value]
 #   }))
 # }
-# 
+#
 # # Apply the mapping
 # continuous_data_nn <- ordinal_to_continuous(data, result_normal$percentiles)
-# 
+#
 # continuous_data_all <- lapply(all_data, function(data) {
 #   ordinal_to_continuous(data, result_normal$percentiles)
 # })
@@ -257,16 +258,16 @@ for (i in 1:5) {
   for (j in i:5) {
     # Extract ordinal data for the current pair
     ordinal_data <- all_data[[paste0("Pair_", i, "_", j)]]
-    
+
     # Create a list of percentiles for the current pair
     percentiles_list_pair <- list(
       percentiles_list[[i]],  # First column uses percentiles from index i
       percentiles_list[[j]]   # Second column uses percentiles from index j
     )
-    
+
     # Convert ordinal data to continuous data
     continuous_data <- ordinal_to_continuous_multi(ordinal_data, percentiles_list_pair)
-    
+
     # Store the continuous data in cts_data
     cts_data[[paste0("Pair_", i, "_", j)]] <- continuous_data
   }
@@ -287,7 +288,7 @@ head(cts_data[["Pair_1_2"]])  # Check one dataset
 # Compute empirical correlations for each dataset
 empirical_corr_list <- lapply(cts_data, cor)
 
-  
+
 specified_corr_list <- sapply(names(specified_corr), function(pair_name) {
     specified_corr[[pair_name]][10]
 })
@@ -301,9 +302,9 @@ specified_corr_list <- sapply(names(specified_corr), function(pair_name) {
 #   ratio <- empirical_corr[1, 2] / specified_corr
 #   return(list(difference = difference, ratio = ratio))
 # }
-# 
-# 
-# 
+#
+#
+#
 # # Extract results
 # differences <- sapply(results, function(x) x$difference)
 # ratios <- sapply(results, function(x) x$ratio)
@@ -318,7 +319,7 @@ compute_diff_ratios_all <- function(empirical_corr_list, specified_corr_vector) 
     ratio <- empirical_corr[1, 2] / specified_corr
     return(list(difference = difference, ratio = ratio))
   }, empirical_corr_list, specified_corr_vector, SIMPLIFY = FALSE)
-  
+
   return(results)
 }
 
@@ -333,7 +334,33 @@ ratios <- sapply(results, function(x) x$ratio)
 print(differences)
 print(ratios)
 
+# Generate plots
+## Create a data frame for plotting
+diff_ratio_df <- data.frame(Pair = factor(paste0("Pair", 1:length(differences)),
+                                          levels = paste0("Pair", 1:length(differences))),
+                            Difference = differences,
+                            Ratio = ratios)
 
+## Plot differences
+p1 <- ggplot(diff_ratio_df, aes(x = Pair, y = Difference)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  theme_minimal() +
+  labs(title = "Differences Between Specified and Empirical Correlations",
+       x = "Pair", y = "Difference") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+## Plot ratios
+p2 <- ggplot(diff_ratio_df, aes(x = Pair, y = Ratio)) +
+  geom_bar(stat = "identity", fill = "green") +
+  theme_minimal() +
+  labs(title = "Ratios of Empirical to Specified Correlations",
+       x = "Pair", y = "Ratio") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  scale_y_continuous(limits = c(0, 1.2))
+
+## Display plots
+print(p1)
+print(p2)
 
 
 # Q8

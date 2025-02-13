@@ -190,8 +190,7 @@ for (i in 1:5){
       input_corr <- -delta_spec / delta_min
     }
     Sigma <- matrix(c(1, input_corr, input_corr, 1), nrow = 2)
-    n <- 100
-    data <- ordsample(n, marginal, Sigma)
+    data <- ordsample(100000, marginal, Sigma)
     all_data[[paste0("Pair_", i, "_", j)]] <- data
   }
 }

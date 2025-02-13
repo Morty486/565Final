@@ -1,0 +1,54 @@
+---
+title: "Table"
+author: "Hengde Ouyang"
+date: "2025-02-13"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+
+```{r}
+dist_names <- c("Normal(0,1)", "Weibull(1,1)", "Binomial(1,0.3)", "Binomial(1,0.8)", 
+                "Ordinal(0.2, 0.3, 0.3, 0.2)", "Ordinal(0.1, 0.4, 0.1, 0.4)", 
+                "Poisson(3)", "Poisson(10)")
+pairs <- t(combn(dist_names, 2))
+all_pairs <- rbind(cbind(dist_names, dist_names), pairs)
+
+pair_table <- data.frame(Pair = paste0("Pair", 1:nrow(all_pairs)),
+                         Distribution1 = all_pairs[,1],
+                         Distribution2 = all_pairs[,2])
+
+kableExtra::kable(pair_table)
+```
+
+
+
+
+
+```{r}
+library(gt)
+gt_table <- pair_table %>%
+  gt() %>%
+  tab_header(
+    title = "Distribution Pairs",
+    subtitle = "This table shows the 36 distribution pairs used in analysis."
+  ) %>%
+  tab_footnote(
+    footnote = "Each pair represents a combination of two distributions for analysis.",
+    locations = cells_title(groups = "title")
+  ) %>%
+  cols_label(
+    Pair = "Pair ID",
+    Distribution1 = "First Distribution",
+    Distribution2 = "Second Distribution"
+  ) %>%
+  tab_options(
+    table.font.size = px(12),
+    column_labels.font.weight = "bold"
+  )
+
+# Print the table
+gt_table
+```
